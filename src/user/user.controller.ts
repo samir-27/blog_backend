@@ -11,6 +11,11 @@ export class UserController {
     return this.userService.findAll();
   }
 
+  @Get('/:id')
+  findOne(@Param('id') id: string): Promise<User | null> {
+    return this.userService.findOne(Number(id));
+  }
+
   @Post()
   create(@Body() body: Partial<User>): Promise<User> {
     return this.userService.create(body);

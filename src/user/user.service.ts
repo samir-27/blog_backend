@@ -16,6 +16,10 @@ export class UserService {
     return this.userRepo.find();
   }
 
+  findOne(id: number): Promise<User | null> {
+    return this.userRepo.findOne({ where: { id } });
+  }
+
   async create(data: Partial<User>): Promise<User> {
     if (!data.password || !data.email || !data.name) {
       throw new Error('All fields are required');
