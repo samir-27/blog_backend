@@ -21,13 +21,14 @@ export class UserService {
       throw new Error('All fields are required');
     }
 
-    const EmailAlreadyExist = await this.userRepo.findOne({ where: { data.email } });
-    if(EmailAlreadyExist){
+    const EmailAlreadyExist = await this.userRepo.findOne({ where: { email: data.email } });
+
+    if (EmailAlreadyExist) {
       throw new Error('Email already Exist');
     }
 
-    const NameAlreadyExist = await this.userRepo.findOne({ where: { data.name } });
-    if(NameAlreadyExist){
+    const NameAlreadyExist = await this.userRepo.findOne({ where: { name: data.name } });
+    if (NameAlreadyExist) {
       throw new Error('Username already Exist');
     }
 
@@ -60,5 +61,22 @@ export class UserService {
     const token = jwt.sign(payload, 'samir27', { expiresIn: '1h' });
 
     return { message: 'Login successful', token, user };
+  }
+
+  async updateUserById(id: number, data: Partial<User>): Promise<User> {
+    const user = await this.userRepo.findOne({ where: { id } });
+    if (!user) {
+      throw new Error('User not found');
+    }
+    if (data.password) {
+      user.password = await bcrypt.hash(data.password, 10);
+    }
+    if (data.profileImage) {
+      user.profileImage = data.profileImage;
+    }
+    if (data.Bio) {
+      user.Bio = data.Bio;
+    }
+    return this.userRepo.save(user);
   }
 }
