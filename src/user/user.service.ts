@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './user.entity';
 import * as bcrypt from 'bcryptjs';
+import * as jwt from 'jsonwebtoken';
 
 @Injectable()
 export class UserService {
@@ -11,19 +12,53 @@ export class UserService {
     private userRepo: Repository<User>,
   ) {}
 
-  findAll() {
+  findAll(): Promise<User[]> {
     return this.userRepo.find();
   }
 
-  async create(data: Partial<User>) {
-    if (!data.password && !data.email && !data.name) {
+  async create(data: Partial<User>): Promise<User> {
+    if (!data.password || !data.email || !data.name) {
       throw new Error('All fields are required');
     }
+
+    const EmailAlreadyExist = await this.userRepo.findOne({ where: { data.email } });
+    if(EmailAlreadyExist){
+      throw new Error('Email already Exist');
+    }
+
+    const NameAlreadyExist = await this.userRepo.findOne({ where: { data.name } });
+    if(NameAlreadyExist){
+      throw new Error('Username already Exist');
+    }
+
     const hashedPassword = await bcrypt.hash(data.password, 10);
     const user = this.userRepo.create({
       ...data,
       password: hashedPassword,
     });
     return this.userRepo.save(user);
+  }
+
+  async login(data: Partial<User>): Promise<{ message: string; token: string; user: User }> {
+    const { email, password } = data;
+
+    if (!email || !password) {
+      throw new Error('Email and password are required');
+    }
+
+    const user = await this.userRepo.findOne({ where: { email } });
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
+      throw new Error('Invalid password');
+    }
+
+    const payload = { email: user.email, sub: user.id };
+    const token = jwt.sign(payload, 'samir27', { expiresIn: '1h' });
+
+    return { message: 'Login successful', token, user };
   }
 }
