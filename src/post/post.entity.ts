@@ -6,8 +6,10 @@ import {
   UpdateDateColumn,
   ManyToOne,
   JoinColumn,
+  OneToMany,
 } from 'typeorm';
 import { User } from '../user/user.entity';
+import { Comment } from 'src/comment/comment.entity';
 
 @Entity()
 export class Post {
@@ -32,4 +34,7 @@ export class Post {
   @ManyToOne(() => User, (user) => user.posts, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'userId' })
   user: User;
+
+  @OneToMany(() => Comment, (comment) => comment.post )
+  comments: Comment[];
 }
