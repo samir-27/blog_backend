@@ -33,4 +33,3 @@ export class Post {
   @JoinColumn({ name: 'userId' })
   user: User;
 }
- 
