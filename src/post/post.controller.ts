@@ -19,10 +19,14 @@ export class PostController {
 
   @UseGuards(AuthGuard('jwt'))
   @Post('create')
-  createPost(@Body() body: { title: string; content: string }, @Req() req) {
+  createPost(
+    @Body() body: { title: string; content: string; category: string; imageUrl: string },
+    @Req() req,
+  ) {
     const userId = req.user.id;
     return this.postService.createPost({ ...body, userId });
   }
+  
 
   @Put('/update/:id')
   @UseGuards(AuthGuard('jwt'))

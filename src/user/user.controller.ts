@@ -16,7 +16,7 @@ export class UserController {
     return this.userService.findOne(Number(id));
   }
 
-  @Post()
+  @Post('signup')
   create(@Body() body: Partial<User>): Promise<User> {
     return this.userService.create(body);
   }

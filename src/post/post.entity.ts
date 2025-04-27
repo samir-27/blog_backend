@@ -25,6 +25,12 @@ export class Post {
   @Column('text')
   content: string;
 
+  @Column({ nullable: true })
+  imageUrl: string;
+
+  @Column({ length: 100, nullable: true })
+  category: string;
+
   @CreateDateColumn()
   createdAt: Date;
 
@@ -35,6 +41,6 @@ export class Post {
   @JoinColumn({ name: 'userId' })
   user: User;
 
-  @OneToMany(() => Comment, (comment) => comment.post )
+  @OneToMany(() => Comment, (comment) => comment.post)
   comments: Comment[];
 }

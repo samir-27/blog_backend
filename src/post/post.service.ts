@@ -19,22 +19,26 @@ export class PostService {
     return this.postRepo.findOne({ where: { id } });
   }
 
-  async createPost(body: { userId: number; title: string; content: string }): Promise<Post> {
-    const { userId, title, content } = body;
-
+  async createPost(body: { userId: number; title: string; content: string; category: string; imageUrl: string }): Promise<Post> {
+    const { userId, title, content, category, imageUrl } = body;
+  
     const user = await this.userRepo.findOne({ where: { id: userId } });
     if (!user) {
       throw new Error('User not found');
     }
-
+  
     const post = this.postRepo.create({
       userId: user.id,
       title,
       content,
+      category,
+      imageUrl,
     });
-
+  
     return this.postRepo.save(post);
   }
+  
+  
 
   async updatePost(id: number, data: Partial<Post>, userId: number): Promise<Post> {
     const post = await this.postRepo.findOne({ where: { id } });
