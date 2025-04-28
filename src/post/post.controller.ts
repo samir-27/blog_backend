@@ -26,7 +26,6 @@ export class PostController {
     const userId = req.user.id;
     return this.postService.createPost({ ...body, userId });
   }
-  
 
   @Put('/update/:id')
   @UseGuards(AuthGuard('jwt'))

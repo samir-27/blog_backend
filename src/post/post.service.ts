@@ -11,22 +11,27 @@ export class PostService {
   ) {}
 
   findAll(): Promise<Post[]> {
-    return this.postRepo.find();
-    //  return this.postRepo.find({ relations: ['user'] });if you want user info with each post
+    return this.postRepo.find({ relations: ['user'] });
   }
 
   findOne(id: number): Promise<Post | null> {
     return this.postRepo.findOne({ where: { id } });
   }
 
-  async createPost(body: { userId: number; title: string; content: string; category: string; imageUrl: string }): Promise<Post> {
+  async createPost(body: {
+    userId: number;
+    title: string;
+    content: string;
+    category: string;
+    imageUrl: string;
+  }): Promise<Post> {
     const { userId, title, content, category, imageUrl } = body;
-  
+
     const user = await this.userRepo.findOne({ where: { id: userId } });
     if (!user) {
       throw new Error('User not found');
     }
-  
+
     const post = this.postRepo.create({
       userId: user.id,
       title,
@@ -34,11 +39,9 @@ export class PostService {
       category,
       imageUrl,
     });
-  
+
     return this.postRepo.save(post);
   }
-  
-  
 
   async updatePost(id: number, data: Partial<Post>, userId: number): Promise<Post> {
     const post = await this.postRepo.findOne({ where: { id } });
