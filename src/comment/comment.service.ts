@@ -8,7 +8,7 @@ export class CommentService {
   constructor(@InjectRepository(Comment) private commentRepo: Repository<Comment>) {}
 
   getAll(postId: number): Promise<Comment[]> {
-    return this.commentRepo.find({ where: { postId } });
+    return this.commentRepo.find({ where: { postId }, relations: ['user'] });
   }
 
   async createComment(data: { comment: string; postId: number; userId: number }): Promise<Comment> {
